@@ -1,0 +1,17 @@
+.zbtn-lg {
+  width: 1.4em;
+  height: 1.4em;
+  line-height: 1.47em;
+  text-align: center;
+  border-radius: 50%;
+}
+.zbtn-lg:hover {
+  color: white;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+.iconBox {
+  width: 2.2em;
+  margin-right: 0.5em;
+  text-align: center;
+}
