@@ -3,8 +3,8 @@ import BigCalendar from "react-big-calendar";
 import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-//import "./styles/calendar-template-builder.css";
-import "react-big-calendar/lib/css/react-big-calendar.css";
+import "./styles/custom-calendar.css";
+//import "react-big-calendar/lib/css/react-big-calendar.css";
 import QuickCreateModal from "./components/AddToTemplateModal";
 import {
   Button,

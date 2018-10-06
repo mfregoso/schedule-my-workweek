@@ -471,10 +471,13 @@ class AddToTemplateModal extends Component {
               style={{
                 position: "relative",
                 top: "-0.4em",
-                marginBottom: "-0.1em"
+                marginBottom: "-0.1em",
+                float: "right"
               }}
             >
-              <big>{this.state.colorName || this.state.addEventTitle}</big>
+              <big className="text-center">
+                {this.state.colorName || this.state.addEventTitle}
+              </big>
             </div>
           </ModalHeader>
           <ModalBody
