@@ -62,7 +62,7 @@ class AddToTemplateModal extends Component {
   populatecolorBox = color => {
     return (
       <option key={color.id} value={color.id}>
-        {color.name}
+        {color.color}
       </option>
     );
   };
@@ -506,9 +506,8 @@ class AddToTemplateModal extends Component {
                       }}
                       invalid={!this.state.validation.color}
                     >
-                      <option>Select an color</option>
-                      {(colorTypes || [])
-                        .filter(act => act.categoryId !== 1)
+                      <option>Select a color</option>
+                      {(this.props.googleColors || [])
                         .map(color => this.populatecolorBox(color))}
                     </Input>
                     <FormFeedback valid />

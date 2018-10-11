@@ -21,6 +21,7 @@ const localizer = BigCalendar.momentLocalizer(moment);
 class App extends Component {
   state = {
     events: [],
+    colorIndex: {},
     quickCreateModal: false,
     selectedEvent: {},
     newStartTime: null,
@@ -40,16 +41,16 @@ class App extends Component {
 
   colorIndex = colorTypes => {
     const colorIndex = {};
-    const actKeys = Object.keys(colorTypes[0]).filter(key => key !== "id");
-    for (const act of colorTypes) {
-      const actData = {};
-      actKeys.forEach(key => {
-        actData[key] = act[key];
+    const colorKeys = Object.keys(colorTypes[0]).filter(key => key !== "id");
+    for (const color of colorTypes) {
+      const colorData = {};
+      colorKeys.forEach(key => {
+        colorData[key] = color[key];
       });
-      colorIndex[act.id] = actData;
+      colorIndex[color.id] = colorData;
     }
-    const colorIds = Object.keys(colorIndex).map(id => parseInt(id));
-    this.setState({ colorIndex, colorIds });
+    console.log(colorIndex);
+    this.setState({ colorIndex });
   };
 
   // initiate pre-existing calendar by grabbing from local storage
@@ -94,7 +95,9 @@ class App extends Component {
     }
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.colorIndex(googleColors);
+  }
 
   componentDidUpdate(prevProps, prevState) {
     // maybe update local storage from here?
@@ -302,7 +305,7 @@ class App extends Component {
           modalOpen={this.state.quickCreateModal}
           onClose={this.closeModalHandler.bind(this)}
           refreshEvents={this.initiateUserCalendar}
-          colorTypes={this.state.colorTypes}
+          googleColors={googleColors}
           sendEventToCalendar={this.updateCalendarFromQuickCreate}
           showUpdatedEvent={this.renderUpdatedEvent.bind(this)}
           delete={this.confirmedDeleteEvent}
