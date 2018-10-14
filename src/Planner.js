@@ -69,24 +69,18 @@ class App extends Component {
       .format("YYYY-MM-DD");
     if (this.state.colorIndex[event.colorTypeId]) {
       const colorData = this.state.colorIndex[event.colorTypeId];
-      let bgColor = `#${colorData.color}`;
-      let categoryId = colorData.categoryId;
-      // if (colorData.color.indexOf("#") !== -1) {
-      //   bgColor = colorData.color;
-      // }
+      let bgColor = colorData.color;
       const updatedEvent = {
         ...event,
         title: colorData.name,
         start: new Date(`${startDate} ${event.startTime}`),
         end: new Date(`${startDate} ${event.endTime}`),
-        bgColor,
-        categoryId
+        bgColor
       };
       return updatedEvent; // delete this
     } else {
       const updatedEvent = {
         ...event,
-        title: "color ID Not Found",
         start: new Date(`${startDate} ${event.startTime}`),
         end: new Date(`${startDate} ${event.endTime}`),
         bgColor: "#4286f4"
