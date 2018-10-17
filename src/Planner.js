@@ -22,7 +22,7 @@ class App extends Component {
   state = {
     events: [],
     colorIndex: {},
-    quickCreateModal: false,
+    quickCreateModal: true,
     selectedEvent: {},
     newStartTime: null,
     newEndTime: null,

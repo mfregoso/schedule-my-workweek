@@ -39,6 +39,7 @@ class AddToTemplateModal extends Component {
     defaultBgColor: "#0f6fbc",
     colorColor: "",
     colorName: "",
+    title: "",
     addEventTitle: "Add to Template",
     startDate: moment("11012015", "MMDDYYYY"), // set moment("2018-08-16"),
     startTime: moment("11012015 08:00", "MMDDYYYY HH:mm"), //new Date(new Date().setHours(new Date().getHours() + 1))), //set 24 HR moment("20:00:00.00000", "HH:mm")
@@ -427,7 +428,7 @@ class AddToTemplateModal extends Component {
             maxWidth: 400,
             minWidth: "25em",
             position: "relative",
-            top: "20%" // original 25
+            top: "0" // original 25
           }}
           isOpen={modalOpen}
           toggle={() => this.closeHandler()}
@@ -494,6 +495,22 @@ class AddToTemplateModal extends Component {
                   style={{ position: "relative", top: "-1em" }}
                 >
                   <FormGroup>
+                    <Label>Event Title</Label>
+                    <Input
+                      type="text"
+                      name="title"
+                      value={this.state.title}
+                      onChange={e => {
+                        this.setState({ [e.target.name]: e.target.value }, () =>
+                          this.validateInputs()
+                        );
+                      }}
+                      invalid={!this.state.validation.color}
+                    />
+                    <FormFeedback valid />
+                    <FormFeedback>This field is required</FormFeedback>
+                  </FormGroup>
+                  <FormGroup>
                     <Label>color</Label>
                     <Input
                       type="select"
@@ -507,8 +524,9 @@ class AddToTemplateModal extends Component {
                       invalid={!this.state.validation.color}
                     >
                       <option>Select a color</option>
-                      {(this.props.googleColors || [])
-                        .map(color => this.populatecolorBox(color))}
+                      {(this.props.googleColors || []).map(color =>
+                        this.populatecolorBox(color)
+                      )}
                     </Input>
                     <FormFeedback valid />
                     <FormFeedback>This field is required</FormFeedback>
