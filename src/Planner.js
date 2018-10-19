@@ -18,11 +18,25 @@ import googleColors from "./data/googleColors";
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
 const localizer = BigCalendar.momentLocalizer(moment);
 
+const colorIndex = colorTypes => {
+  // transform array of colors into one object (to be used as an index for O(1) efficiency)
+  const colorIndex = {};
+  const colorKeys = Object.keys(colorTypes[0]).filter(key => key !== "id");
+  for (const color of colorTypes) {
+    const colorData = {};
+    colorKeys.forEach(key => {
+      colorData[key] = color[key];
+    });
+    colorIndex[color.id] = colorData;
+  }
+  return colorIndex;
+};
+
 class App extends Component {
   state = {
     events: [],
-    colorIndex: {},
-    quickCreateModal: true,
+    colorIndex: colorIndex(googleColors),
+    quickCreateModal: false,
     selectedEvent: {},
     newStartTime: null,
     newEndTime: null,
@@ -37,20 +51,6 @@ class App extends Component {
         { id: 6, name: "Saturday", short: "Sat", abbr: "S" }
       ]
     }
-  };
-
-  colorIndex = colorTypes => {
-    const colorIndex = {};
-    const colorKeys = Object.keys(colorTypes[0]).filter(key => key !== "id");
-    for (const color of colorTypes) {
-      const colorData = {};
-      colorKeys.forEach(key => {
-        colorData[key] = color[key];
-      });
-      colorIndex[color.id] = colorData;
-    }
-    console.log(colorIndex);
-    this.setState({ colorIndex });
   };
 
   // initiate pre-existing calendar by grabbing from local storage
@@ -89,9 +89,7 @@ class App extends Component {
     }
   };
 
-  componentDidMount() {
-    this.colorIndex(googleColors);
-  }
+  componentDidMount() {}
 
   componentDidUpdate(prevProps, prevState) {
     // maybe update local storage from here?
