@@ -37,7 +37,7 @@ class AddToTemplateModal extends Component {
     dayOfWeek: "", //dayOfWeek
     headerTextColor: "white",
     defaultBgColor: "#0f6fbc",
-    colorColor: "",
+    modalHeaderColor: "",
     colorName: "",
     title: "",
     addEventTitle: "Add to Template",
@@ -64,6 +64,14 @@ class AddToTemplateModal extends Component {
     return (
       <option key={color.id} value={color.id}>
         {color.color}
+      </option>
+    );
+  };
+
+  populateDaysBox = dayofWeek => {
+    return (
+      <option key={dayofWeek.id} value={dayofWeek.id}>
+        {dayofWeek.name}
       </option>
     );
   };
@@ -118,11 +126,8 @@ class AddToTemplateModal extends Component {
       start: new Date(`${startDate} ${startTime}`),
       end: new Date(`${startDate} ${endTime}`),
       dayOfWeek: parseInt(this.state.dayOfWeek),
-      title: this.state.colorName
+      title: this.state.title
     };
-    if (this.props.colorIndex[colorTypeId]) {
-      newEventData.categoryId = this.props.colorIndex[colorTypeId].categoryId;
-    }
     if (this.state.inEditMode) {
       newEventData.id = parseInt(this.props.selectedEvent.id);
     }
@@ -166,8 +171,8 @@ class AddToTemplateModal extends Component {
     this.setState({
       colorTypeId: "",
       dayOfWeek: "",
-      colorColor: "",
-      colorName: "",
+      modalHeaderColor: "",
+      title: "",
       inEditMode: false,
       isSunday: false,
       isMonday: false,
@@ -211,7 +216,7 @@ class AddToTemplateModal extends Component {
       <i
         className="zmdi zmdi-delete zmdi-hc-lg pointer zbtn-lg"
         onClick={() => {
-          this.props.delete(this.props.selectedEvent.id);
+          this.props.delete(this.props.selectedEvent);
           this.closeHandler();
         }}
         style={{ padding: "0 0.2em 0 0.2em" }}
@@ -220,18 +225,15 @@ class AddToTemplateModal extends Component {
   };
 
   updateModalBgColor = id => {
-    const colorData = this.props.colorTypes.filter(type => id === type.id);
-    let colorColor = "";
-    let colorName = "";
-    if (colorData.length > 0) {
-      colorColor = `#${colorData[0].color}`;
-      colorName = colorData[0].name;
-    }
-    this.setState({ colorColor, colorName });
+    let modalHeaderColor = this.props.colorIndex[id].color;
+    this.setState({ modalHeaderColor });
   };
 
   componentDidUpdate(prevProps) {
-    if (this.props.start !== prevProps.start) {
+    if (
+      this.props.start !== prevProps.start &&
+      this.props.end !== prevProps.end
+    ) {
       this.setState({
         startDate: moment(this.props.start),
         startTime: moment(this.props.start),
@@ -241,14 +243,22 @@ class AddToTemplateModal extends Component {
       this.setDay(moment(this.props.start).format("e"));
     }
     if (this.props.selectedEvent !== prevProps.selectedEvent) {
-      if (this.props.selectedEvent.id) {
-        this.updateModalBgColor(this.props.selectedEvent.colorTypeId);
+      let {
+        colorTypeId,
+        dayOfWeek,
+        start,
+        end,
+        title
+      } = this.props.selectedEvent;
+      if (colorTypeId) {
+        this.updateModalBgColor(colorTypeId);
         this.setState({
           inEditMode: true,
-          colorTypeId: this.props.selectedEvent.colorTypeId,
-          dayOfWeek: this.props.selectedEvent.dayOfWeek,
-          startTime: moment(this.props.selectedEvent.start),
-          endTime: moment(this.props.selectedEvent.end)
+          title,
+          colorTypeId,
+          dayOfWeek,
+          startTime: moment(start),
+          endTime: moment(end)
         });
       }
     }
@@ -353,10 +363,9 @@ class AddToTemplateModal extends Component {
             />
             <label htmlFor="weekday-sat">S</label>
           </FormGroup>
-          {!this.state.inEditMode &&
-            this.state.validation.pleasePickADay && (
-              <small className="text-red">At least one day is required</small>
-            )}
+          {!this.state.inEditMode && this.state.validation.pleasePickADay && (
+            <small className="text-red">At least one day is required</small>
+          )}
         </div>
       );
     } else {
@@ -371,7 +380,7 @@ class AddToTemplateModal extends Component {
             onChange={this.handleDayChange}
           >
             {(this.state.daysDataList || []).map(day =>
-              this.populatecolorBox(day)
+              this.populateDaysBox(day)
             )}
           </select>
         </div>
@@ -428,7 +437,7 @@ class AddToTemplateModal extends Component {
             maxWidth: 400,
             minWidth: "25em",
             position: "relative",
-            top: "0" // original 25
+            top: "10" // original 25
           }}
           isOpen={modalOpen}
           toggle={() => this.closeHandler()}
@@ -438,33 +447,12 @@ class AddToTemplateModal extends Component {
         >
           <ModalHeader
             style={{
-              width: "100%",
-              color: this.state.headerTextColor,
-              float: "right",
-              backgroundColor:
-                this.state.colorColor || this.state.defaultBgColor
-            }}
-          >
-            &nbsp;
-            {/*NEED THIS TO FLOAT RIGHT*/}
-            <div style={{ position: "relative", top: "-0.3em" }}>
-              {this.state.inEditMode && this.insertDeleteButton()}
-              &nbsp;&nbsp;&nbsp;
-              <i
-                className="zmdi zmdi-close zmdi-hc-lg pointer zbtn-lg"
-                onClick={() => this.closeHandler()}
-              />
-            </div>
-            {/* <span className="text-center mx-auto">{event.title}</span> */}
-          </ModalHeader>
-          <ModalHeader
-            style={{
               position: "relative",
-              top: "-1.74em",
+              paddingTop: "2em",
               width: "100%",
               color: this.state.headerTextColor,
               backgroundColor:
-                this.state.colorColor || this.state.defaultBgColor
+                this.state.modalHeaderColor || this.state.defaultBgColor
             }}
           >
             <div
@@ -477,7 +465,9 @@ class AddToTemplateModal extends Component {
               }}
             >
               <big className="text-center">
-                {this.state.colorName || this.state.addEventTitle}
+                &nbsp;
+                {(this.state.inEditMode && "Editing Saved Event") ||
+                  this.state.addEventTitle}
               </big>
             </div>
           </ModalHeader>

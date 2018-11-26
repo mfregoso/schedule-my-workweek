@@ -72,7 +72,6 @@ class App extends Component {
       let bgColor = colorData.color;
       const updatedEvent = {
         ...event,
-        title: colorData.name,
         start: new Date(`${startDate} ${event.startTime}`),
         end: new Date(`${startDate} ${event.endTime}`),
         bgColor
@@ -89,10 +88,20 @@ class App extends Component {
     }
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    let savedData = localStorage.getItem("schedule");
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      const events = parsed.map(ev => this.reformatEventData(ev));
+      this.setState({ events });
+    }
+  }
 
   componentDidUpdate(prevProps, prevState) {
-    // maybe update local storage from here?
+    if (this.state.events !== prevState.events) {
+      const events = JSON.stringify(this.state.events);
+      localStorage.setItem("schedule", events);
+    }
   }
   // end of didUpate
 
@@ -107,9 +116,9 @@ class App extends Component {
     this.quickRemoveFromCalendar(id);
   };
 
-  quickRemoveFromCalendar = id => {
-    let remaining = this.state.events.filter(ev => id !== ev.id);
-    this.setState({ events: remaining });
+  quickRemoveFromCalendar = event => {
+    let events = this.state.events.filter(ev => ev !== event);
+    this.setState({ events });
   };
 
   moveEventHandler = this.onMoveEvent.bind(this);
@@ -138,12 +147,12 @@ class App extends Component {
       startTime,
       endTime
     };
-    this.sendUpdateToServer(updatedEvent, newStart, newEnd);
+    this.renderMovedEvent(event, updatedEvent, newStart, newEnd);
   };
 
-  sendUpdateToServer = (event, newStart, newEnd) => {
-    this.renderMovedEvent(event, newStart, newEnd);
-  };
+  // sendUpdateToServer = (event, newStart, newEnd) => {
+  //   this.renderMovedEvent(event, newStart, newEnd);
+  // };
 
   renderUpdatedEvent(event) {
     const { events } = this.state;
@@ -158,10 +167,10 @@ class App extends Component {
     });
   }
 
-  renderMovedEvent(event, start, end) {
+  renderMovedEvent(original, event, start, end) {
     const { events } = this.state;
     const updatedEvent = { ...event, start, end };
-    const remaining = events.filter(ev => ev.id !== event.id);
+    const remaining = events.filter(ev => ev !== original);
     this.setState({
       events: [...remaining, updatedEvent]
     });
@@ -173,13 +182,12 @@ class App extends Component {
       background: `rgba(${parseInt(color.substring(1, 3), 16)}, ${parseInt(
         color.substring(3, 5),
         16
-      )}, ${parseInt(color.substring(5, 7), 16)}, 0.8)`
+      )}, ${parseInt(color.substring(5, 7), 16)}, 0.99)`
     };
     return { style };
   };
 
   onCalendarEventSelection = event => {
-    //console.log(event);
     this.setState({
       selectedEvent: event,
       quickCreateModal: true
@@ -298,9 +306,10 @@ class App extends Component {
           onClose={this.closeModalHandler.bind(this)}
           refreshEvents={this.initiateUserCalendar}
           googleColors={googleColors}
+          colorIndex={this.state.colorIndex}
           sendEventToCalendar={this.updateCalendarFromQuickCreate}
           showUpdatedEvent={this.renderUpdatedEvent.bind(this)}
-          delete={this.confirmedDeleteEvent}
+          delete={this.quickRemoveFromCalendar}
         />
       </div>
     );
