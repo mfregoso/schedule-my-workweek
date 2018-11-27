@@ -1,5 +1,9 @@
 export default [
   {
+    color: "#5484ed",
+    id: 9
+  },
+  {
     color: "#a4bdfc",
     id: 1
   },
@@ -30,10 +34,6 @@ export default [
   {
     color: "#e1e1e1",
     id: 8
-  },
-  {
-    color: "#5484ed",
-    id: 9
   },
   {
     color: "#51b749",

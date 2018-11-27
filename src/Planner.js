@@ -4,15 +4,7 @@ import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import "./styles/custom-calendar.css";
-//import "react-big-calendar/lib/css/react-big-calendar.css";
 import QuickCreateModal from "./components/AddToTemplateModal";
-import {
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
-  DropdownMenu
-} from "reactstrap";
 import googleColors from "./data/googleColors";
 
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
@@ -53,12 +45,10 @@ class App extends Component {
     }
   };
 
-  // initiate pre-existing calendar by grabbing from local storage
-
-  updateCalendarFromQuickCreate = newEvent => {
-    let event = this.reformatEventData(newEvent);
+  updateCalendarFromQuickCreate = newEvents => {
+    let newEventsArr = newEvents.map(ev => this.reformatEventData(ev));
     this.setState({
-      events: [...this.state.events, event],
+      events: [...this.state.events, ...newEventsArr],
       quickCreateModal: false
     });
   };
@@ -76,8 +66,10 @@ class App extends Component {
         end: new Date(`${startDate} ${event.endTime}`),
         bgColor
       };
-      return updatedEvent; // delete this
+      return updatedEvent;
     } else {
+      // just in edge case
+      console.log("color id not found!");
       const updatedEvent = {
         ...event,
         start: new Date(`${startDate} ${event.startTime}`),
@@ -103,7 +95,6 @@ class App extends Component {
       localStorage.setItem("schedule", events);
     }
   }
-  // end of didUpate
 
   closeModalHandler = () => {
     this.setState({
@@ -122,7 +113,6 @@ class App extends Component {
   onMoveEvent({ event, start, end }) {
     let startDate = moment(start).format("DD");
     let endDate = moment(end).format("DD");
-    //console.log(event);
     let endDateTime = end;
     if (startDate !== endDate) {
       endDateTime = moment(start)
@@ -146,16 +136,10 @@ class App extends Component {
     this.renderMovedEvent(event, updatedEvent, newStart, newEnd);
   };
 
-  // sendUpdateToServer = (event, newStart, newEnd) => {
-  //   this.renderMovedEvent(event, newStart, newEnd);
-  // };
-
-  renderUpdatedEvent(event) {
+  renderUpdatedEvent(original, event) {
     const { events } = this.state;
-    //console.log(events);
     let reformatted = this.reformatEventData(event);
-    let remaining = events.filter(ev => ev.id !== event.id);
-    //console.log(remaining);
+    let remaining = events.filter(ev => ev !== original);
     this.setState({
       events: [...remaining, reformatted],
       quickCreateModal: false,
@@ -202,41 +186,7 @@ class App extends Component {
     //console.log(slotInfo);
   };
 
-  customCalendarComps = {
-    event: event => {
-      let ev = event.event;
-      return (
-        <React.Fragment>
-          <div>{event.title}</div>
-          <br />
-          <div>
-            <p>.</p>
-          </div>
-        </React.Fragment>
-      );
-    }
-  };
-
-  mapTemplateNames = template => {
-    return (
-      <DropdownItem
-        key={`plan${template.templateId}`}
-        value={template.templateId}
-        onClick={() => {
-          // set background color?
-        }}
-      >
-        {template.templatename}
-      </DropdownItem>
-    );
-  };
-
-  dropdownToggle = () => {
-    this.setState({ dropdownOpen: !this.state.dropdownOpen });
-  };
-
   render() {
-    //ref={this.componentWidth}
     let calDateTimeFormatting = {
       dayFormat: (date, culture, localizer) =>
         localizer.format(date, "dddd", culture),
@@ -257,10 +207,11 @@ class App extends Component {
           </div>
           <div className="col text-right">
             <button
-              className="btn-lg btn-success"
+              className="btn-lg btn-primary"
               onClick={() => this.setState({ quickCreateModal: true })}
               style={{
                 position: "relative",
+                top: "0.3em",
                 borderRadius: "1.8em",
                 margin: "0 1em 0.8em 0"
               }}
@@ -285,12 +236,10 @@ class App extends Component {
             .minutes(0)
             .toDate()}
           formats={calDateTimeFormatting}
-          //max={this.state.maxTime}
           onEventDrop={this.moveEventHandler}
           eventPropGetter={this.setEventCellStyling}
           onSelectEvent={this.onCalendarEventSelection}
           onSelectSlot={this.calendarSelectionHandler}
-          //components={this.customCalendarComps}
         />
 
         <QuickCreateModal
@@ -300,7 +249,6 @@ class App extends Component {
           end={this.state.newEventEnd}
           modalOpen={this.state.quickCreateModal}
           onClose={this.closeModalHandler.bind(this)}
-          refreshEvents={this.initiateUserCalendar}
           googleColors={googleColors}
           sendEventToCalendar={this.updateCalendarFromQuickCreate}
           showUpdatedEvent={this.renderUpdatedEvent.bind(this)}

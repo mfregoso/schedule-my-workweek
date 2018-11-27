@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Label, FormGroup, FormFeedback } from "reactstrap";
+import { Label, FormGroup } from "reactstrap";
 
 class MultiDayPicker extends Component {
   state = {
@@ -13,33 +13,7 @@ class MultiDayPicker extends Component {
     selectedDays: []
   };
 
-  dayToggle = e => {
-    this.setState({ [e.target.name]: e.target.checked });
-    // setTimeout(() => {
-    //   this.validateInputs();
-    // }, 300);
-  };
-
-  resetDays = () => {
-    let isSunday = false;
-    let isMonday = false;
-    let isTuesday = false;
-    let isWednesday = false;
-    let isThursday = false;
-    let isFriday = false;
-    let isSaturday = false;
-    let selectedDays = [];
-    this.setState({
-      isSunday,
-      isMonday,
-      isTuesday,
-      isWednesday,
-      isThursday,
-      isFriday,
-      isSaturday,
-      selectedDays
-    });
-  };
+  dayToggle = e => this.setState({ [e.target.name]: e.target.checked });
 
   getSelectedDays = () => {
     let selectedDays = [];
@@ -172,6 +146,14 @@ class MultiDayPicker extends Component {
           />
           <label htmlFor="weekday-sat">S</label>
         </FormGroup>
+        {this.props.valid && (
+          <small
+            className="text-danger"
+            style={{ position: "relative", top: "-1em" }}
+          >
+            At least one day is required
+          </small>
+        )}
       </div>
     );
   }

@@ -1,13 +1,11 @@
 import React, { Component } from "react";
 import moment from "moment";
 import {
-  Col,
   Input,
   Label,
   FormGroup,
   ListGroup,
   ListGroupItem,
-  ListGroupItemText,
   Modal,
   ModalBody,
   ModalHeader,
@@ -16,26 +14,21 @@ import {
 import DatePicker from "react-datepicker";
 import "../styles/react-datepicker.css";
 import { handleInputChanges } from "../utilities/inputUtilities";
-import {
-  formatToDateString,
-  formatToTimeString
-} from "../utilities/dateTimeFormatter";
+import { formatToTimeString } from "../utilities/dateTimeFormatter";
 import "../styles/zmdi-buttons.css";
 import MultiDayPicker from "./MultiDayPicker";
 
 class AddToTemplateModal extends Component {
   state = {
     selectedDays: [],
-    repeatingMode: true,
     inEditMode: false,
-    colorTypeId: "",
+    colorTypeId: "9",
     dayOfWeek: "", //dayOfWeek
     headerTextColor: "white",
-    defaultBgColor: "#0f6fbc",
+    defaultBgColor: "#5484ed",
     modalHeaderColor: "",
-    colorName: "",
     title: "",
-    addEventTitle: "Add to Template",
+    addEventTitle: "Add to Your Schedule",
     startDate: moment("11012015", "MMDDYYYY"), // set moment("2018-08-16"),
     startTime: moment("11012015 08:00", "MMDDYYYY HH:mm"), //new Date(new Date().setHours(new Date().getHours() + 1))), //set 24 HR moment("20:00:00.00000", "HH:mm")
     endTime: moment("11012015 10:00", "MMDDYYYY HH:mm"),
@@ -51,15 +44,18 @@ class AddToTemplateModal extends Component {
     validation: {
       color: true,
       pickedADay: false,
-      pleasePickADay: false
+      pleasePickADay: false,
+      title: true
     }
   };
 
   populateColorBox = color => {
     return (
-      <option key={color.id} value={color.id}>
-        {color.color}
-      </option>
+      <option
+        key={color.id}
+        value={color.id}
+        style={{ backgroundColor: color.color }}
+      />
     );
   };
 
@@ -71,46 +67,43 @@ class AddToTemplateModal extends Component {
     );
   };
 
-  setSelectedDays = selectedDays => this.setState({ selectedDays });
+  setSelectedDays = selectedDays => {
+    this.setState({ selectedDays }, () => {
+      if (selectedDays.length !== 0 && this.state.validation.pleasePickADay)
+        this.validateInputs();
+    });
+  };
 
   getFormData = () => {
-    let startDate = formatToDateString(this.state.startDate);
     let startTime = formatToTimeString(this.state.startTime);
     let endTime = formatToTimeString(this.state.endTime);
     let colorTypeId = parseInt(this.state.colorTypeId);
     const newEventData = {
       colorTypeId,
-      startDate,
       startTime,
       endTime,
-      start: new Date(`${startDate} ${startTime}`),
-      end: new Date(`${startDate} ${endTime}`),
       dayOfWeek: parseInt(this.state.dayOfWeek),
       title: this.state.title
     };
-    if (this.state.inEditMode) {
-      newEventData.id = parseInt(this.props.selectedEvent.id);
-    }
     return newEventData;
   };
 
   handleSubmission = event => {
-    //let { colorTypeId, dayOfWeek, startTime, endTime } = event;
     if (this.state.inEditMode) {
-      this.sendUpdatedEvent(event);
-      // } else if (this.isRepeating() >= 2) {
-      //   console.log("repeating event detected");
-      //   this.props.refreshEvents();
-      //   this.props.onClose();
-      //   this.resetDays();
+      this.sendUpdatedEvent(this.props.selectedEvent, event);
     } else {
-      this.sendEventToCalendar(event);
+      let newEvents = this.state.selectedDays.map(day => {
+        let dayOfWeek = day;
+        let { colorTypeId, title, startTime, endTime } = event;
+        return { colorTypeId, title, startTime, endTime, dayOfWeek };
+      });
+      this.sendEventToCalendar(newEvents);
     }
   };
 
-  sendUpdatedEvent = event => {
+  sendUpdatedEvent = (original, event) => {
     this.resetValues();
-    this.props.showUpdatedEvent(event, event.start, event.end);
+    this.props.showUpdatedEvent(original, event);
   };
 
   sendEventToCalendar = event => {
@@ -120,31 +113,29 @@ class AddToTemplateModal extends Component {
 
   resetValues = () => {
     this.setState({
-      colorTypeId: "",
+      colorTypeId: "9",
       dayOfWeek: "",
       modalHeaderColor: "",
       title: "",
       inEditMode: false,
+      selectedDays: [],
       validation: {
         color: true,
         pickedADay: false,
-        pleasePickADay: false
+        pleasePickADay: false,
+        title: true
       }
-      // startDate: moment("11012015", "MMDDYYYY"),
-      // startTime: moment("11012015 08:00", "MMDDYYYY HH:mm"),
-      // endTime: moment("11012015 10:00", "MMDDYYYY HH:mm")
     });
   };
 
   closeHandler = () => {
     this.props.onClose();
     this.resetValues();
-    this.setState({ selectedDays: [] });
   };
 
   updateInputValue = handleInputChanges.bind(this);
 
-  handlecolorChange = e => {
+  handleColorChange = e => {
     this.updateInputValue(e);
     this.updateModalBgColor(parseInt(e.target.value));
   };
@@ -177,9 +168,9 @@ class AddToTemplateModal extends Component {
     this.setState({ modalHeaderColor });
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (
-      this.props.start !== prevProps.start &&
+      this.props.start !== prevProps.start ||
       this.props.end !== prevProps.end
     ) {
       this.setState({
@@ -188,6 +179,9 @@ class AddToTemplateModal extends Component {
         endTime: moment(this.props.end),
         dayOfWeek: moment(this.props.start).format("e")
       });
+    }
+    if (this.state.selectedDays !== prevState.selectedDays) {
+      //this.validateInputs();
     }
     if (this.props.selectedEvent !== prevProps.selectedEvent) {
       let {
@@ -211,16 +205,13 @@ class AddToTemplateModal extends Component {
     }
   }
 
-  componentWillUnmount() {
-    this.setState({ selectedDays: [] });
-  }
-
   renderDayPicker = () => {
     if (this.state.inEditMode === false) {
       return (
         <MultiDayPicker
           dayOfWeek={this.state.dayOfWeek}
           sendSelectedDays={this.setSelectedDays}
+          valid={this.state.validation.pleasePickADay}
         />
       );
     } else {
@@ -244,12 +235,19 @@ class AddToTemplateModal extends Component {
   };
 
   validateInputs = () => {
-    const { colorTypeId, validation } = this.state;
+    const {
+      colorTypeId,
+      validation,
+      inEditMode,
+      selectedDays,
+      title
+    } = this.state;
+    title.length > 2 ? (validation.title = true) : (validation.title = false);
     Number.isInteger(parseInt(colorTypeId))
       ? (validation.color = true)
       : (validation.color = false);
-    if (!this.state.inEditMode) {
-      if (this.state.selectedDays.length === 0) {
+    if (!inEditMode) {
+      if (selectedDays.length === 0) {
         validation.pickedADay = false;
         validation.pleasePickADay = true;
       } else {
@@ -269,7 +267,12 @@ class AddToTemplateModal extends Component {
         return false;
       }
     }
-    if (!this.state.inEditMode && validation.color && validation.pickedADay) {
+    if (
+      !this.state.inEditMode &&
+      validation.color &&
+      validation.pickedADay &&
+      validation.title
+    ) {
       return true;
     } else {
       return false;
@@ -277,7 +280,7 @@ class AddToTemplateModal extends Component {
   };
 
   render() {
-    const { modalOpen, colorTypes } = this.props;
+    const { modalOpen } = this.props;
     return (
       <React.Fragment>
         <Modal
@@ -314,7 +317,7 @@ class AddToTemplateModal extends Component {
             >
               <big className="text-center">
                 &nbsp;
-                {(this.state.inEditMode && "Editing Saved Event") ||
+                {(this.state.inEditMode && "Edit Your Saved Event") ||
                   this.state.addEventTitle}
               </big>
             </div>
@@ -330,7 +333,7 @@ class AddToTemplateModal extends Component {
               <ListGroupItem className="border-0">
                 <div
                   className="mx-auto"
-                  style={{ position: "relative", top: "-1em" }}
+                  style={{ position: "relative", paddingBottom: "1.4em" }}
                 >
                   <FormGroup>
                     <Label>Event Title</Label>
@@ -343,31 +346,32 @@ class AddToTemplateModal extends Component {
                           this.validateInputs()
                         );
                       }}
-                      invalid={!this.state.validation.color}
+                      invalid={!this.state.validation.title}
                     />
                     <FormFeedback valid />
                     <FormFeedback>This field is required</FormFeedback>
                   </FormGroup>
                   <FormGroup>
-                    <Label>color</Label>
+                    <Label>Color</Label>
                     <Input
                       type="select"
                       name="colorTypeId"
                       value={this.state.colorTypeId}
-                      onChange={e => {
-                        this.setState({ [e.target.name]: e.target.value }, () =>
-                          this.validateInputs()
-                        );
+                      onChange={this.handleColorChange}
+                      //invalid={!this.state.validation.color}
+                      style={{
+                        backgroundColor:
+                          this.state.modalHeaderColor ||
+                          this.state.defaultBgColor
                       }}
-                      invalid={!this.state.validation.color}
                     >
-                      <option>Select a color</option>
+                      {/* <option>Select a color</option> */}
                       {(this.props.googleColors || []).map(color =>
                         this.populateColorBox(color)
                       )}
                     </Input>
-                    <FormFeedback valid />
-                    <FormFeedback>This field is required</FormFeedback>
+                    {/* <FormFeedback valid />
+                    <FormFeedback>This field is required</FormFeedback> */}
                   </FormGroup>
                   {this.renderDayPicker()}
                   <div
@@ -455,7 +459,7 @@ class AddToTemplateModal extends Component {
                       }
                     }}
                   >
-                    {(this.state.inEditMode && "Save") || "Add"}
+                    {(this.state.inEditMode && "Update") || "Add"}
                   </button>
                 </div>
               </ListGroupItem>
