@@ -21,6 +21,7 @@ import {
   formatToTimeString
 } from "../utilities/dateTimeFormatter";
 import "../styles/zmdi-buttons.css";
+import MultiDayPicker from "./MultiDayPicker";
 
 class AddToTemplateModal extends Component {
   state = {
@@ -60,7 +61,7 @@ class AddToTemplateModal extends Component {
     }
   };
 
-  populatecolorBox = color => {
+  populateColorBox = color => {
     return (
       <option key={color.id} value={color.id}>
         {color.color}
@@ -68,10 +69,10 @@ class AddToTemplateModal extends Component {
     );
   };
 
-  populateDaysBox = dayofWeek => {
+  populateDaysBox = dayOfWeek => {
     return (
-      <option key={dayofWeek.id} value={dayofWeek.id}>
-        {dayofWeek.name}
+      <option key={dayOfWeek.id} value={dayOfWeek.id}>
+        {dayOfWeek.name}
       </option>
     );
   };
@@ -292,82 +293,7 @@ class AddToTemplateModal extends Component {
 
   renderDayPicker = () => {
     if (this.state.repeatingMode === true && this.state.inEditMode === false) {
-      return (
-        <div className="weekDays-selector">
-          <Label style={{ paddingBottom: "0.8em" }}>
-            Select additional days for a repeating event.
-          </Label>
-
-          <FormGroup className="d-flex justify-content-center">
-            <input
-              type="checkbox"
-              id="weekday-sun"
-              name="isSunday"
-              checked={this.state.isSunday}
-              onChange={this.dayToggle}
-              className="weekday"
-            />
-            <label htmlFor="weekday-sun">S</label>
-            <input
-              type="checkbox"
-              id="weekday-mon"
-              name="isMonday"
-              checked={this.state.isMonday}
-              onChange={this.dayToggle}
-              className="weekday"
-            />
-            <label htmlFor="weekday-mon">M</label>
-            <input
-              type="checkbox"
-              id="weekday-tue"
-              name="isTuesday"
-              checked={this.state.isTuesday}
-              onChange={this.dayToggle}
-              className="weekday"
-            />
-            <label htmlFor="weekday-tue">T</label>
-            <input
-              type="checkbox"
-              id="weekday-wed"
-              name="isWednesday"
-              checked={this.state.isWednesday}
-              onChange={this.dayToggle}
-              className="weekday"
-            />
-            <label htmlFor="weekday-wed">W</label>
-            <input
-              type="checkbox"
-              id="weekday-thu"
-              name="isThursday"
-              checked={this.state.isThursday}
-              onChange={this.dayToggle}
-              className="weekday"
-            />
-            <label htmlFor="weekday-thu">TH</label>
-            <input
-              type="checkbox"
-              id="weekday-fri"
-              name="isFriday"
-              checked={this.state.isFriday}
-              onChange={this.dayToggle}
-              className="weekday"
-            />
-            <label htmlFor="weekday-fri">F</label>
-            <input
-              type="checkbox"
-              id="weekday-sat"
-              name="isSaturday"
-              checked={this.state.isSaturday}
-              onChange={this.dayToggle}
-              className="weekday"
-            />
-            <label htmlFor="weekday-sat">S</label>
-          </FormGroup>
-          {!this.state.inEditMode && this.state.validation.pleasePickADay && (
-            <small className="text-red">At least one day is required</small>
-          )}
-        </div>
-      );
+      return <MultiDayPicker dayOfWeek={this.state.dayOfWeek} />;
     } else {
       return (
         <div className="form-group" style={{ paddingBottom: "0.1em" }}>
@@ -515,7 +441,7 @@ class AddToTemplateModal extends Component {
                     >
                       <option>Select a color</option>
                       {(this.props.googleColors || []).map(color =>
-                        this.populatecolorBox(color)
+                        this.populateColorBox(color)
                       )}
                     </Input>
                     <FormFeedback valid />
