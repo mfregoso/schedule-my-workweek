@@ -25,14 +25,8 @@ import MultiDayPicker from "./MultiDayPicker";
 
 class AddToTemplateModal extends Component {
   state = {
+    selectedDays: [],
     repeatingMode: true,
-    isSunday: false,
-    isMonday: false,
-    isTuesday: false,
-    isWednesday: false,
-    isThursday: false,
-    isFriday: false,
-    isSaturday: false,
     inEditMode: false,
     colorTypeId: "",
     dayOfWeek: "", //dayOfWeek
@@ -77,42 +71,7 @@ class AddToTemplateModal extends Component {
     );
   };
 
-  isRepeating = () => {
-    let counter = 0;
-
-    if (this.state.isSunday === true) {
-      counter += 1;
-    }
-    if (this.state.isMonday === true) {
-      counter += 1;
-    }
-    if (this.state.isTuesday === true) {
-      counter += 1;
-    }
-    if (this.state.isWednesday === true) {
-      counter += 1;
-    }
-    if (this.state.isThursday === true) {
-      counter += 1;
-    }
-    if (this.state.isFriday === true) {
-      counter += 1;
-    }
-    if (this.state.isSaturday === true) {
-      counter += 1;
-    }
-    return counter;
-  };
-
-  resetDays = () => {
-    this.setState({ isSunday: false });
-    this.setState({ isMonday: false });
-    this.setState({ isTuesday: false });
-    this.setState({ isWednesday: false });
-    this.setState({ isThursday: false });
-    this.setState({ isFriday: false });
-    this.setState({ isSaturday: false });
-  };
+  setSelectedDays = selectedDays => this.setState({ selectedDays });
 
   getFormData = () => {
     let startDate = formatToDateString(this.state.startDate);
@@ -132,27 +91,18 @@ class AddToTemplateModal extends Component {
     if (this.state.inEditMode) {
       newEventData.id = parseInt(this.props.selectedEvent.id);
     }
-    if (this.isRepeating() >= 2) {
-      newEventData.isSunday = this.state.isSunday;
-      newEventData.isMonday = this.state.isMonday;
-      newEventData.isTuesday = this.state.isTuesday;
-      newEventData.isWednesday = this.state.isWednesday;
-      newEventData.isThursday = this.state.isThursday;
-      newEventData.isFriday = this.state.isFriday;
-      newEventData.isSaturday = this.state.isSaturday;
-    }
     return newEventData;
   };
 
   handleSubmission = event => {
-    let { colorTypeId, dayOfWeek, startTime, endTime } = event;
+    //let { colorTypeId, dayOfWeek, startTime, endTime } = event;
     if (this.state.inEditMode) {
       this.sendUpdatedEvent(event);
-    } else if (this.isRepeating() >= 2) {
-      console.log("repeating event detected");
-      this.props.refreshEvents();
-      this.props.onClose();
-      this.resetDays();
+      // } else if (this.isRepeating() >= 2) {
+      //   console.log("repeating event detected");
+      //   this.props.refreshEvents();
+      //   this.props.onClose();
+      //   this.resetDays();
     } else {
       this.sendEventToCalendar(event);
     }
@@ -175,13 +125,6 @@ class AddToTemplateModal extends Component {
       modalHeaderColor: "",
       title: "",
       inEditMode: false,
-      isSunday: false,
-      isMonday: false,
-      isTuesday: false,
-      isWednesday: false,
-      isThursday: false,
-      isFriday: false,
-      isSaturday: false,
       validation: {
         color: true,
         pickedADay: false,
@@ -196,6 +139,7 @@ class AddToTemplateModal extends Component {
   closeHandler = () => {
     this.props.onClose();
     this.resetValues();
+    this.setState({ selectedDays: [] });
   };
 
   updateInputValue = handleInputChanges.bind(this);
@@ -213,16 +157,19 @@ class AddToTemplateModal extends Component {
   };
 
   insertDeleteButton = () => {
-    return (
-      <i
-        className="zmdi zmdi-delete zmdi-hc-lg pointer zbtn-lg"
-        onClick={() => {
-          this.props.delete(this.props.selectedEvent);
-          this.closeHandler();
-        }}
-        style={{ padding: "0 0.2em 0 0.2em" }}
-      />
-    );
+    if (this.state.inEditMode === true) {
+      return (
+        <button
+          className="btn btn-danger"
+          onClick={() => {
+            this.props.delete(this.props.selectedEvent);
+            this.closeHandler();
+          }}
+        >
+          Delete
+        </button>
+      );
+    }
   };
 
   updateModalBgColor = id => {
@@ -241,7 +188,6 @@ class AddToTemplateModal extends Component {
         endTime: moment(this.props.end),
         dayOfWeek: moment(this.props.start).format("e")
       });
-      this.setDay(moment(this.props.start).format("e"));
     }
     if (this.props.selectedEvent !== prevProps.selectedEvent) {
       let {
@@ -265,35 +211,18 @@ class AddToTemplateModal extends Component {
     }
   }
 
-  setDay = day => {
-    switch (day) {
-      case "0":
-        this.setState({ isSunday: true });
-        break;
-      case "1":
-        this.setState({ isMonday: true });
-        break;
-      case "2":
-        this.setState({ isTuesday: true });
-        break;
-      case "3":
-        this.setState({ isWednesday: true });
-        break;
-      case "4":
-        this.setState({ isThursday: true });
-        break;
-      case "5":
-        this.setState({ isFriday: true });
-        break;
-      case "6":
-        this.setState({ isSaturday: true });
-        break;
-    }
-  };
+  componentWillUnmount() {
+    this.setState({ selectedDays: [] });
+  }
 
   renderDayPicker = () => {
-    if (this.state.repeatingMode === true && this.state.inEditMode === false) {
-      return <MultiDayPicker dayOfWeek={this.state.dayOfWeek} />;
+    if (this.state.inEditMode === false) {
+      return (
+        <MultiDayPicker
+          dayOfWeek={this.state.dayOfWeek}
+          sendSelectedDays={this.setSelectedDays}
+        />
+      );
     } else {
       return (
         <div className="form-group" style={{ paddingBottom: "0.1em" }}>
@@ -314,20 +243,13 @@ class AddToTemplateModal extends Component {
     }
   };
 
-  dayToggle = e => {
-    this.setState({ [e.target.name]: e.target.checked });
-    setTimeout(() => {
-      this.validateInputs();
-    }, 300);
-  };
-
   validateInputs = () => {
     const { colorTypeId, validation } = this.state;
     Number.isInteger(parseInt(colorTypeId))
       ? (validation.color = true)
       : (validation.color = false);
     if (!this.state.inEditMode) {
-      if (this.isRepeating() === 0) {
+      if (this.state.selectedDays.length === 0) {
         validation.pickedADay = false;
         validation.pleasePickADay = true;
       } else {
@@ -522,6 +444,8 @@ class AddToTemplateModal extends Component {
                   </div>
                 </div>
                 <div className="text-right">
+                  {this.insertDeleteButton()}
+                  &nbsp;&nbsp;
                   <button
                     className="btn btn-primary"
                     onClick={() => {

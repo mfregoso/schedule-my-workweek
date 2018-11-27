@@ -112,10 +112,6 @@ class App extends Component {
     });
   };
 
-  confirmedDeleteEvent = id => {
-    this.quickRemoveFromCalendar(id);
-  };
-
   quickRemoveFromCalendar = event => {
     let events = this.state.events.filter(ev => ev !== event);
     this.setState({ events });
@@ -306,7 +302,6 @@ class App extends Component {
           onClose={this.closeModalHandler.bind(this)}
           refreshEvents={this.initiateUserCalendar}
           googleColors={googleColors}
-          colorIndex={this.state.colorIndex}
           sendEventToCalendar={this.updateCalendarFromQuickCreate}
           showUpdatedEvent={this.renderUpdatedEvent.bind(this)}
           delete={this.quickRemoveFromCalendar}

@@ -91,7 +91,10 @@ class MultiDayPicker extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state !== prevState) console.log(this.getSelectedDays());
+    if (this.state !== prevState) {
+      let daysOfWeek = this.getSelectedDays();
+      this.props.sendSelectedDays(daysOfWeek);
+    }
     if (this.props.dayOfWeek !== prevProps.dayOfWeek) {
       this.setDay(this.props.dayOfWeek);
     }
