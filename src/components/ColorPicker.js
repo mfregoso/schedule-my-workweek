@@ -16,8 +16,13 @@ const ColorPicker = ({
     return (
       <DropdownItem
         key={color.id}
-        style={{ backgroundColor: color.color, height: "2em" }}
+        style={{
+          backgroundColor: color.color,
+          height: "2em",
+          marginBottom: "0.15em"
+        }}
         onClick={() => setSelectedColor(color.id)}
+        className="colorBox-cursor"
       />
     );
   };
