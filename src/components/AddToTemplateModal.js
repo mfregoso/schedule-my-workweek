@@ -17,20 +17,21 @@ import { handleInputChanges } from "../utilities/inputUtilities";
 import { formatToTimeString } from "../utilities/dateTimeFormatter";
 import "../styles/zmdi-buttons.css";
 import MultiDayPicker from "./MultiDayPicker";
+import ColorPicker from "./ColorPicker";
 
 class AddToTemplateModal extends Component {
   state = {
     selectedDays: [],
     inEditMode: false,
     colorTypeId: "9",
-    dayOfWeek: "", //dayOfWeek
+    dayOfWeek: "",
     headerTextColor: "white",
     defaultBgColor: "#5484ed",
     modalHeaderColor: "",
     title: "",
     addEventTitle: "Add to Your Schedule",
-    startDate: moment("11012015", "MMDDYYYY"), // set moment("2018-08-16"),
-    startTime: moment("11012015 08:00", "MMDDYYYY HH:mm"), //new Date(new Date().setHours(new Date().getHours() + 1))), //set 24 HR moment("20:00:00.00000", "HH:mm")
+    startDate: moment("11012015", "MMDDYYYY"),
+    startTime: moment("11012015 08:00", "MMDDYYYY HH:mm"),
     endTime: moment("11012015 10:00", "MMDDYYYY HH:mm"),
     daysDataList: [
       { id: 0, name: "Sunday", short: "Sun", letter: "S" },
@@ -40,23 +41,13 @@ class AddToTemplateModal extends Component {
       { id: 4, name: "Thursday", short: "Thu", letter: "T" },
       { id: 5, name: "Friday", short: "Fri", letter: "F" },
       { id: 6, name: "Saturday", short: "Sat", letter: "S" }
-    ], //new Date(new Date().setHours(new Date().getHours() + 2)))
+    ],
     validation: {
       color: true,
       pickedADay: false,
       pleasePickADay: false,
       title: true
     }
-  };
-
-  populateColorBox = color => {
-    return (
-      <option
-        key={color.id}
-        value={color.id}
-        style={{ backgroundColor: color.color }}
-      />
-    );
   };
 
   populateDaysBox = dayOfWeek => {
@@ -113,9 +104,9 @@ class AddToTemplateModal extends Component {
 
   resetValues = () => {
     this.setState({
-      colorTypeId: "9",
+      //colorTypeId: "9",
       dayOfWeek: "",
-      modalHeaderColor: "",
+      //modalHeaderColor: "",
       title: "",
       inEditMode: false,
       selectedDays: [],
@@ -135,9 +126,9 @@ class AddToTemplateModal extends Component {
 
   updateInputValue = handleInputChanges.bind(this);
 
-  handleColorChange = e => {
-    this.updateInputValue(e);
-    this.updateModalBgColor(parseInt(e.target.value));
+  setSelectedColor = colorTypeId => {
+    this.setState({ colorTypeId });
+    this.updateModalBgColor(colorTypeId);
   };
 
   handleDayChange = e => {
@@ -220,7 +211,6 @@ class AddToTemplateModal extends Component {
           <label>Day of Week</label>
           <select
             className="custom-select form-control mx-auto"
-            //style={{ width: "20em" }}
             name="dayOfWeek"
             value={this.state.dayOfWeek}
             onChange={this.handleDayChange}
@@ -242,7 +232,7 @@ class AddToTemplateModal extends Component {
       selectedDays,
       title
     } = this.state;
-    title.length > 2 ? (validation.title = true) : (validation.title = false);
+    title.length > 0 ? (validation.title = true) : (validation.title = false);
     Number.isInteger(parseInt(colorTypeId))
       ? (validation.color = true)
       : (validation.color = false);
@@ -333,10 +323,10 @@ class AddToTemplateModal extends Component {
               <ListGroupItem className="border-0">
                 <div
                   className="mx-auto"
-                  style={{ position: "relative", paddingBottom: "1.4em" }}
+                  style={{ marginTop: "0.6em", paddingBottom: "1.4em" }}
                 >
                   <FormGroup>
-                    <Label>Event Title</Label>
+                    <Label>Event Name</Label>
                     <Input
                       type="text"
                       name="title"
@@ -351,29 +341,18 @@ class AddToTemplateModal extends Component {
                     <FormFeedback valid />
                     <FormFeedback>This field is required</FormFeedback>
                   </FormGroup>
+
                   <FormGroup>
-                    <Label>Color</Label>
-                    <Input
-                      type="select"
-                      name="colorTypeId"
-                      value={this.state.colorTypeId}
-                      onChange={this.handleColorChange}
-                      //invalid={!this.state.validation.color}
-                      style={{
-                        backgroundColor:
-                          this.state.modalHeaderColor ||
-                          this.state.defaultBgColor
-                      }}
-                    >
-                      {/* <option>Select a color</option> */}
-                      {(this.props.googleColors || []).map(color =>
-                        this.populateColorBox(color)
-                      )}
-                    </Input>
-                    {/* <FormFeedback valid />
-                    <FormFeedback>This field is required</FormFeedback> */}
+                    <ColorPicker
+                      colorList={this.props.googleColors}
+                      selectedColor={this.state.modalHeaderColor}
+                      defaultColor={this.state.defaultBgColor}
+                      setSelectedColor={this.setSelectedColor}
+                    />
                   </FormGroup>
+
                   {this.renderDayPicker()}
+
                   <div
                     className="form-group"
                     style={{ minWidth: "22em", marginBottom: "-0.0em" }}
@@ -386,17 +365,14 @@ class AddToTemplateModal extends Component {
                       >
                         <DatePicker
                           selected={this.state.startTime}
-                          onChange={time => {
-                            if (time > this.state.endTime) {
+                          onChange={startTime => {
+                            if (startTime > this.state.endTime) {
                               this.setState({
-                                startTime: time,
-                                endTime: moment(time).add(15, "minutes")
+                                startTime,
+                                endTime: moment(startTime).add(15, "minutes")
                               });
                             } else {
-                              this.setState({
-                                startTime: time
-                                //endTime: moment(time).add(1, "hour")
-                              });
+                              this.setState({ startTime });
                             }
                           }}
                           showTimeSelect
@@ -424,12 +400,7 @@ class AddToTemplateModal extends Component {
                       >
                         <DatePicker
                           selected={this.state.endTime}
-                          onChange={time =>
-                            this.setState({
-                              //startTime: time,
-                              endTime: time //moment(time).add(1, "hour")
-                            })
-                          }
+                          onChange={endTime => this.setState({ endTime })}
                           showTimeSelect
                           showTimeSelectOnly
                           timeIntervals={15}
@@ -455,7 +426,8 @@ class AddToTemplateModal extends Component {
                     onClick={() => {
                       this.validateInputs();
                       if (this.allValid()) {
-                        this.handleSubmission(this.getFormData());
+                        const data = this.getFormData();
+                        this.handleSubmission(data);
                       }
                     }}
                   >

@@ -69,7 +69,6 @@ class App extends Component {
       return updatedEvent;
     } else {
       // just in edge case
-      console.log("color id not found!");
       const updatedEvent = {
         ...event,
         start: new Date(`${startDate} ${event.startTime}`),

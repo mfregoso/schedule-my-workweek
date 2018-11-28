@@ -61,6 +61,8 @@ class MultiDayPicker extends Component {
       case "6":
         this.setState({ isSaturday: true });
         break;
+      default:
+        break;
     }
   };
 
@@ -77,8 +79,8 @@ class MultiDayPicker extends Component {
   render() {
     return (
       <div className="weekDays-selector">
-        <Label style={{ paddingBottom: "0.8em" }}>
-          Select additional days for a repeating event.
+        <Label style={{ paddingTop: "0.2em", paddingBottom: "0.2em" }}>
+          Select multiple days for a repeating event
         </Label>
 
         <FormGroup className="d-flex justify-content-center">
