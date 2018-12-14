@@ -201,7 +201,7 @@ class App extends Component {
               className="text-center"
               style={{ position: "relative", bottom: "-0.3em" }}
             >
-              My Weekly Schedule
+              Week Planner
             </h2>
           </div>
           <div className="col text-right">
