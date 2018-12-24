@@ -206,7 +206,7 @@ class App extends Component {
           </div>
           <div className="col text-right">
             <button
-              className="btn-lg btn-primary"
+              className="btn btn-lg btn-dark"
               onClick={() => this.setState({ quickCreateModal: true })}
               style={{
                 position: "relative",
