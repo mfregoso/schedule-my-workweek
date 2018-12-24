@@ -38,7 +38,7 @@ class AddToTemplateModal extends Component {
       { id: 1, name: "Monday", short: "Mon", letter: "M" },
       { id: 2, name: "Tuesday", short: "Tue", letter: "T" },
       { id: 3, name: "Wednesday", short: "Wed", letter: "W" },
-      { id: 4, name: "Thursday", short: "Thu", letter: "T" },
+      { id: 4, name: "Thursday", short: "Thu", letter: "TH" },
       { id: 5, name: "Friday", short: "Fri", letter: "F" },
       { id: 6, name: "Saturday", short: "Sat", letter: "S" }
     ],
@@ -203,6 +203,7 @@ class AddToTemplateModal extends Component {
           dayOfWeek={this.state.dayOfWeek}
           sendSelectedDays={this.setSelectedDays}
           valid={this.state.validation.pleasePickADay}
+          listOfDays={this.state.daysDataList}
         />
       );
     } else {

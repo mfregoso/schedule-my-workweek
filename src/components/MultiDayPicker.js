@@ -3,13 +3,13 @@ import { Label, FormGroup } from "reactstrap";
 
 class MultiDayPicker extends Component {
   state = {
-    isSunday: false,
-    isMonday: false,
-    isTuesday: false,
-    isWednesday: false,
-    isThursday: false,
-    isFriday: false,
-    isSaturday: false,
+    Sunday: false,
+    Monday: false,
+    Tuesday: false,
+    Wednesday: false,
+    Thursday: false,
+    Friday: false,
+    Saturday: false,
     selectedDays: []
   };
 
@@ -18,51 +18,31 @@ class MultiDayPicker extends Component {
   getSelectedDays = () => {
     let selectedDays = [];
     const {
-      isSunday,
-      isMonday,
-      isTuesday,
-      isWednesday,
-      isThursday,
-      isFriday,
-      isSaturday
+      Sunday,
+      Monday,
+      Tuesday,
+      Wednesday,
+      Thursday,
+      Friday,
+      Saturday
     } = this.state;
 
-    if (isSunday) selectedDays.push(0);
-    if (isMonday) selectedDays.push(1);
-    if (isTuesday) selectedDays.push(2);
-    if (isWednesday) selectedDays.push(3);
-    if (isThursday) selectedDays.push(4);
-    if (isFriday) selectedDays.push(5);
-    if (isSaturday) selectedDays.push(6);
+    if (Sunday) selectedDays.push(0);
+    if (Monday) selectedDays.push(1);
+    if (Tuesday) selectedDays.push(2);
+    if (Wednesday) selectedDays.push(3);
+    if (Thursday) selectedDays.push(4);
+    if (Friday) selectedDays.push(5);
+    if (Saturday) selectedDays.push(6);
 
     return selectedDays;
   };
 
   setDay = day => {
-    switch (day) {
-      case "0":
-        this.setState({ isSunday: true });
-        break;
-      case "1":
-        this.setState({ isMonday: true });
-        break;
-      case "2":
-        this.setState({ isTuesday: true });
-        break;
-      case "3":
-        this.setState({ isWednesday: true });
-        break;
-      case "4":
-        this.setState({ isThursday: true });
-        break;
-      case "5":
-        this.setState({ isFriday: true });
-        break;
-      case "6":
-        this.setState({ isSaturday: true });
-        break;
-      default:
-        break;
+    if (day) {
+      const index = parseInt(day, 10);
+      const selectedDay = this.props.listOfDays[index].name;
+      this.setState({ [selectedDay]: true });
     }
   };
 
@@ -77,6 +57,22 @@ class MultiDayPicker extends Component {
   }
 
   render() {
+    const renderDayButton = day => {
+      return (
+        <React.Fragment key={day.id}>
+          <input
+            type="checkbox"
+            id={day.name}
+            name={day.name}
+            checked={this.state[day.name]}
+            onChange={this.dayToggle.bind(this)}
+            className="weekday"
+          />
+          <label htmlFor={day.name}>{day.letter}</label>
+        </React.Fragment>
+      );
+    };
+
     return (
       <div className="weekDays-selector">
         <Label style={{ paddingTop: "0.2em", paddingBottom: "0.2em" }}>
@@ -84,69 +80,7 @@ class MultiDayPicker extends Component {
         </Label>
 
         <FormGroup className="d-flex justify-content-center">
-          <input
-            type="checkbox"
-            id="weekday-sun"
-            name="isSunday"
-            checked={this.state.isSunday}
-            onChange={this.dayToggle}
-            className="weekday"
-          />
-          <label htmlFor="weekday-sun">S</label>
-          <input
-            type="checkbox"
-            id="weekday-mon"
-            name="isMonday"
-            checked={this.state.isMonday}
-            onChange={this.dayToggle}
-            className="weekday"
-          />
-          <label htmlFor="weekday-mon">M</label>
-          <input
-            type="checkbox"
-            id="weekday-tue"
-            name="isTuesday"
-            checked={this.state.isTuesday}
-            onChange={this.dayToggle}
-            className="weekday"
-          />
-          <label htmlFor="weekday-tue">T</label>
-          <input
-            type="checkbox"
-            id="weekday-wed"
-            name="isWednesday"
-            checked={this.state.isWednesday}
-            onChange={this.dayToggle}
-            className="weekday"
-          />
-          <label htmlFor="weekday-wed">W</label>
-          <input
-            type="checkbox"
-            id="weekday-thu"
-            name="isThursday"
-            checked={this.state.isThursday}
-            onChange={this.dayToggle}
-            className="weekday"
-          />
-          <label htmlFor="weekday-thu">TH</label>
-          <input
-            type="checkbox"
-            id="weekday-fri"
-            name="isFriday"
-            checked={this.state.isFriday}
-            onChange={this.dayToggle}
-            className="weekday"
-          />
-          <label htmlFor="weekday-fri">F</label>
-          <input
-            type="checkbox"
-            id="weekday-sat"
-            name="isSaturday"
-            checked={this.state.isSaturday}
-            onChange={this.dayToggle}
-            className="weekday"
-          />
-          <label htmlFor="weekday-sat">S</label>
+          {(this.props.listOfDays || []).map(day => renderDayButton(day))}
         </FormGroup>
         {this.props.valid && (
           <small
