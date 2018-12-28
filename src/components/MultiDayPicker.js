@@ -46,6 +46,22 @@ class MultiDayPicker extends Component {
     }
   };
 
+  renderDayButton = day => {
+    return (
+      <React.Fragment key={day.id}>
+        <input
+          type="checkbox"
+          id={day.name}
+          name={day.name}
+          checked={this.state[day.name]}
+          onChange={this.dayToggle.bind(this)}
+          className="weekday"
+        />
+        <label htmlFor={day.name}>{day.letter}</label>
+      </React.Fragment>
+    );
+  };
+
   componentDidUpdate(prevProps, prevState) {
     if (this.state !== prevState) {
       let daysOfWeek = this.getSelectedDays();
@@ -57,22 +73,6 @@ class MultiDayPicker extends Component {
   }
 
   render() {
-    const renderDayButton = day => {
-      return (
-        <React.Fragment key={day.id}>
-          <input
-            type="checkbox"
-            id={day.name}
-            name={day.name}
-            checked={this.state[day.name]}
-            onChange={this.dayToggle.bind(this)}
-            className="weekday"
-          />
-          <label htmlFor={day.name}>{day.letter}</label>
-        </React.Fragment>
-      );
-    };
-
     return (
       <div className="weekDays-selector">
         <Label style={{ paddingTop: "0.2em", paddingBottom: "0.2em" }}>
@@ -80,7 +80,7 @@ class MultiDayPicker extends Component {
         </Label>
 
         <FormGroup className="d-flex justify-content-center">
-          {(this.props.listOfDays || []).map(day => renderDayButton(day))}
+          {(this.props.listOfDays || []).map(day => this.renderDayButton(day))}
         </FormGroup>
         {this.props.valid && (
           <small
