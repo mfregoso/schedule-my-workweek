@@ -2,16 +2,16 @@ import React, { Component } from "react";
 import BigCalendar from "react-big-calendar";
 import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import QuickCreateModal from "./AddToTemplateModal";
+import googleColors from "../data/googleColors";
+import "../styles/custom-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import "./styles/custom-calendar.css";
-import QuickCreateModal from "./components/AddToTemplateModal";
-import googleColors from "./data/googleColors";
 
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
 const localizer = BigCalendar.momentLocalizer(moment);
 
 const colorIndex = colorTypes => {
-  // transform array of colors into one object (to be used as an index for O(1) efficiency)
+  // transform array of colors into one object (to be used as an index for O(1) lookup)
   const colorIndex = {};
   const colorKeys = Object.keys(colorTypes[0]).filter(key => key !== "id");
   for (const color of colorTypes) {

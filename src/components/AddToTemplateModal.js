@@ -12,12 +12,13 @@ import {
   FormFeedback
 } from "reactstrap";
 import DatePicker from "react-datepicker";
-import "../styles/react-datepicker.css";
 import { handleInputChanges } from "../utilities/inputUtilities";
 import { formatToTimeString } from "../utilities/dateTimeFormatter";
-import "../styles/zmdi-buttons.css";
 import MultiDayPicker from "./MultiDayPicker";
 import ColorPicker from "./ColorPicker";
+import daysOfWeek from "../data/daysOfWeek";
+import "../styles/react-datepicker.css";
+import "../styles/zmdi-buttons.css";
 
 class AddToTemplateModal extends Component {
   state = {
@@ -33,15 +34,6 @@ class AddToTemplateModal extends Component {
     startDate: moment("11012015", "MMDDYYYY"),
     startTime: moment("11012015 08:00", "MMDDYYYY HH:mm"),
     endTime: moment("11012015 10:00", "MMDDYYYY HH:mm"),
-    daysDataList: [
-      { id: 0, name: "Sunday", short: "Sun", letter: "S" },
-      { id: 1, name: "Monday", short: "Mon", letter: "M" },
-      { id: 2, name: "Tuesday", short: "Tue", letter: "T" },
-      { id: 3, name: "Wednesday", short: "Wed", letter: "W" },
-      { id: 4, name: "Thursday", short: "Thu", letter: "TH" },
-      { id: 5, name: "Friday", short: "Fri", letter: "F" },
-      { id: 6, name: "Saturday", short: "Sat", letter: "S" }
-    ],
     validation: {
       color: true,
       pickedADay: false,
@@ -203,7 +195,7 @@ class AddToTemplateModal extends Component {
           dayOfWeek={this.state.dayOfWeek}
           sendSelectedDays={this.setSelectedDays}
           valid={this.state.validation.pleasePickADay}
-          listOfDays={this.state.daysDataList}
+          listOfDays={daysOfWeek}
         />
       );
     } else {
@@ -216,9 +208,7 @@ class AddToTemplateModal extends Component {
             value={this.state.dayOfWeek}
             onChange={this.handleDayChange}
           >
-            {(this.state.daysDataList || []).map(day =>
-              this.populateDaysBox(day)
-            )}
+            {daysOfWeek.map(day => this.populateDaysBox(day))}
           </select>
         </div>
       );
