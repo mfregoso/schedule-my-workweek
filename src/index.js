@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-//import "./index.css";
-import Planner from "./Planner";
+import Planner from "./components/Planner";
 import * as serviceWorker from "./serviceWorker";
 import "bootstrap/dist/css/bootstrap.css";
 

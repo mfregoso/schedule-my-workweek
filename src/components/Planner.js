@@ -31,18 +31,7 @@ class App extends Component {
     quickCreateModal: false,
     selectedEvent: {},
     newStartTime: null,
-    newEndTime: null,
-    pageSettings: {
-      daysOfWeek: [
-        { id: 0, name: "Sunday", short: "Sun", abbr: "S" },
-        { id: 1, name: "Monday", short: "Mon", abbr: "M" },
-        { id: 2, name: "Tuesday", short: "Tue", abbr: "T" },
-        { id: 3, name: "Wednesday", short: "Wed", abbr: "W" },
-        { id: 4, name: "Thursday", short: "Thu", abbr: "T" },
-        { id: 5, name: "Friday", short: "Fri", abbr: "F" },
-        { id: 6, name: "Saturday", short: "Sat", abbr: "S" }
-      ]
-    }
+    newEndTime: null
   };
 
   updateCalendarFromQuickCreate = newEvents => {
