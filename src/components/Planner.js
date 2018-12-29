@@ -3,6 +3,7 @@ import BigCalendar from "react-big-calendar";
 import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import QuickCreateModal from "./AddToTemplateModal";
+import Modal from "./GenericModal";
 import googleColors from "../data/googleColors";
 import "../styles/custom-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
@@ -31,7 +32,8 @@ class App extends Component {
     quickCreateModal: false,
     selectedEvent: {},
     newStartTime: null,
-    newEndTime: null
+    newEndTime: null,
+    showModal: false
   };
 
   updateCalendarFromQuickCreate = newEvents => {
@@ -174,6 +176,8 @@ class App extends Component {
     //console.log(slotInfo);
   };
 
+  closeModal = () => this.setState({ showModal: false });
+
   render() {
     let calDateTimeFormatting = {
       dayFormat: (date, culture, localizer) =>
@@ -229,7 +233,6 @@ class App extends Component {
           onSelectEvent={this.onCalendarEventSelection}
           onSelectSlot={this.calendarSelectionHandler}
         />
-
         <QuickCreateModal
           start={this.state.newEventStart}
           selectedEvent={this.state.selectedEvent}
@@ -242,6 +245,14 @@ class App extends Component {
           showUpdatedEvent={this.renderUpdatedEvent.bind(this)}
           delete={this.quickRemoveFromCalendar}
         />
+        <Modal
+          modalOpen={this.state.showModal}
+          toggle={() => this.closeModal()}
+          title="How to Use the Workweek Planner"
+          size="lg"
+        >
+          "Hello"
+        </Modal>
       </div>
     );
   }
