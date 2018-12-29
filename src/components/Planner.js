@@ -71,6 +71,11 @@ class App extends Component {
   };
 
   componentDidMount() {
+    let returningUser = localStorage.getItem("returningUser");
+    if (!returningUser) {
+      localStorage.setItem("returningUser", true);
+      // show welcome modal
+    }
     let savedData = localStorage.getItem("schedule");
     if (savedData) {
       const parsed = JSON.parse(savedData);
