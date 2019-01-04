@@ -74,7 +74,7 @@ class App extends Component {
     let returningUser = localStorage.getItem("returningUser");
     if (!returningUser) {
       localStorage.setItem("returningUser", true);
-      // show welcome modal
+      this.setState({ showModal: true });
     }
     let savedData = localStorage.getItem("schedule");
     if (savedData) {

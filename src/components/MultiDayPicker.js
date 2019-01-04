@@ -17,24 +17,11 @@ class MultiDayPicker extends Component {
 
   getSelectedDays = () => {
     let selectedDays = [];
-    const {
-      Sunday,
-      Monday,
-      Tuesday,
-      Wednesday,
-      Thursday,
-      Friday,
-      Saturday
-    } = this.state;
-
-    if (Sunday) selectedDays.push(0);
-    if (Monday) selectedDays.push(1);
-    if (Tuesday) selectedDays.push(2);
-    if (Wednesday) selectedDays.push(3);
-    if (Thursday) selectedDays.push(4);
-    if (Friday) selectedDays.push(5);
-    if (Saturday) selectedDays.push(6);
-
+    this.props.listOfDays.forEach(day => {
+      if (this.state[day.name]) {
+        selectedDays.push(day.id);
+      }
+    });
     return selectedDays;
   };
 
