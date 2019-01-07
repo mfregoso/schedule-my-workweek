@@ -4,6 +4,7 @@ import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import QuickCreateModal from "./AddToTemplateModal";
 import Modal from "./GenericModal";
+import Guide from "./WelcomeGuide";
 import googleColors from "../data/googleColors";
 import "../styles/custom-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
@@ -253,10 +254,10 @@ class App extends Component {
         <Modal
           modalOpen={this.state.showModal}
           toggle={() => this.closeModal()}
-          title="How to Use the Workweek Planner"
+          title="Using the Workweek Planner"
           size="lg"
         >
-          "Hello"
+          <Guide />
         </Modal>
       </div>
     );
