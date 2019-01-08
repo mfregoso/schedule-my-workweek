@@ -194,7 +194,23 @@ class App extends Component {
     return (
       <div className="container-fluid">
         <div className="form-row">
-          <div className="col" />
+          <div className="col">
+            <button
+              className="btn btn-lg btn-danger"
+              onClick={() => this.setState({ showModal: true })}
+              style={{
+                position: "relative",
+                top: "0.5em",
+                height: "2.45em",
+                lineHeight: "1.1em",
+                width: "2.45em",
+                borderRadius: "2.45em",
+                margin: "0 0em 0.8em 0.5em"
+              }}
+            >
+              <big>?</big>
+            </button>
+          </div>
           <div className="col text-center">
             <h2
               className="text-center"
@@ -209,7 +225,7 @@ class App extends Component {
               onClick={() => this.setState({ quickCreateModal: true })}
               style={{
                 position: "relative",
-                top: "0.3em",
+                top: "0.5em",
                 borderRadius: "1.8em",
                 margin: "0 1em 0.8em 0"
               }}

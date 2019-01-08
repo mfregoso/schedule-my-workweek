@@ -9,7 +9,7 @@ class GenericModal extends React.Component {
         <ModalHeader>{title && title}</ModalHeader>
         <ModalBody>
           {this.props.children}
-          <button className="btn btn-muted float-right" onClick={toggle}>
+          <button className="btn btn-light float-right" onClick={toggle}>
             Close
           </button>
         </ModalBody>

@@ -5,9 +5,9 @@ const guide = () => {
     <React.Fragment>
       <strong>Creating Events</strong>
       <ul>
-        <li>Click Plus (+) Button</li>
+        <li>Use the (+) Button</li>
         <li>Click on Desired Start Time</li>
-        <li>Click & Hold to Select Desired Time Slot</li>
+        <li>Click & Drag to Select Desired Time Slot</li>
       </ul>
       <strong>Modifying Events</strong>
       <ul>
