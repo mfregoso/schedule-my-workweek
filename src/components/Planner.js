@@ -179,7 +179,6 @@ class App extends Component {
       newEventEnd,
       quickCreateModal: true
     });
-    //console.log(slotInfo);
   };
 
   closeModal = () => this.setState({ showModal: false });
@@ -269,7 +268,7 @@ class App extends Component {
         />
         <Modal
           modalOpen={this.state.showModal}
-          toggle={() => this.closeModal()}
+          toggle={this.closeModal}
           title="Using the Workweek Planner"
           size="lg"
         >

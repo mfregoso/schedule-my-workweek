@@ -1,6 +1,6 @@
 import React from "react";
 
-const guide = () => {
+const Guide = () => {
   return (
     <React.Fragment>
       <strong>Creating Events</strong>
@@ -18,4 +18,4 @@ const guide = () => {
   );
 };
 
-export default guide;
+export default Guide;
