@@ -3,13 +3,6 @@ import { Label, FormGroup } from "reactstrap";
 
 class MultiDayPicker extends Component {
   state = {
-    Sunday: false,
-    Monday: false,
-    Tuesday: false,
-    Wednesday: false,
-    Thursday: false,
-    Friday: false,
-    Saturday: false,
     selectedDays: []
   };
 
@@ -40,8 +33,8 @@ class MultiDayPicker extends Component {
           type="checkbox"
           id={day.name}
           name={day.name}
-          checked={this.state[day.name]}
-          onChange={this.dayToggle.bind(this)}
+          checked={this.state[day.name] || false}
+          onChange={this.dayToggle}
           className="weekday"
         />
         <label htmlFor={day.name}>{day.letter}</label>

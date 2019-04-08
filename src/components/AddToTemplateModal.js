@@ -52,7 +52,7 @@ class AddToTemplateModal extends Component {
 
   setSelectedDays = selectedDays => {
     this.setState({ selectedDays }, () => {
-      if (selectedDays.length !== 0 && this.state.validation.pleasePickADay)
+      if (selectedDays.length && this.state.validation.pleasePickADay)
         this.validateInputs();
     });
   };
@@ -131,7 +131,7 @@ class AddToTemplateModal extends Component {
   };
 
   insertDeleteButton = () => {
-    if (this.state.inEditMode === true) {
+    if (this.state.inEditMode) {
       return (
         <button
           className="btn btn-danger"
@@ -189,7 +189,7 @@ class AddToTemplateModal extends Component {
   }
 
   renderDayPicker = () => {
-    if (this.state.inEditMode === false) {
+    if (!this.state.inEditMode) {
       return (
         <MultiDayPicker
           dayOfWeek={this.state.dayOfWeek}
@@ -272,7 +272,7 @@ class AddToTemplateModal extends Component {
             top: "10" // original 25
           }}
           isOpen={modalOpen}
-          toggle={() => this.closeHandler()}
+          toggle={this.closeHandler}
           modalTransition={{ timeout: 10 }}
           backdropTransition={{ timeout: 10 }}
           //className={this.props.className} // this will auto-size the modal if enabled

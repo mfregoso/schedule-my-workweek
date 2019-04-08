@@ -34,7 +34,7 @@ class App extends Component {
     selectedEvent: {},
     newStartTime: null,
     newEndTime: null,
-    showModal: false
+    showWelcomeModal: false
   };
 
   updateCalendarFromQuickCreate = newEvents => {
@@ -75,7 +75,7 @@ class App extends Component {
     let returningUser = localStorage.getItem("returningUser");
     if (!returningUser) {
       localStorage.setItem("returningUser", true);
-      this.setState({ showModal: true });
+      this.setState({ showWelcomeModal: true });
     }
     let savedData = localStorage.getItem("schedule");
     if (savedData) {
@@ -104,9 +104,7 @@ class App extends Component {
     this.setState({ events });
   };
 
-  moveEventHandler = this.onMoveEvent.bind(this);
-
-  onMoveEvent({ event, start, end }) {
+  onMoveEvent = ({ event, start, end }) => {
     let startDate = moment(start).format("DD");
     let endDate = moment(end).format("DD");
     let endDateTime = end;
@@ -132,7 +130,7 @@ class App extends Component {
     this.renderMovedEvent(event, updatedEvent, newStart, newEnd);
   };
 
-  renderUpdatedEvent(original, event) {
+  renderUpdatedEvent = (original, event) => {
     const { events } = this.state;
     let reformatted = this.reformatEventData(event);
     let remaining = events.filter(ev => ev !== original);
@@ -143,7 +141,7 @@ class App extends Component {
     });
   }
 
-  renderMovedEvent(original, event, start, end) {
+  renderMovedEvent = (original, event, start, end) => {
     const { events } = this.state;
     const updatedEvent = { ...event, start, end };
     const remaining = events.filter(ev => ev !== original);
@@ -181,7 +179,7 @@ class App extends Component {
     });
   };
 
-  closeModal = () => this.setState({ showModal: false });
+  closeModal = () => this.setState({ showWelcomeModal: false });
 
   render() {
     let calDateTimeFormatting = {
@@ -196,7 +194,7 @@ class App extends Component {
           <div className="col">
             <button
               className="btn btn-lg btn-danger"
-              onClick={() => this.setState({ showModal: true })}
+              onClick={() => this.setState({ showWelcomeModal: true })}
               style={{
                 position: "relative",
                 top: "0.5em",
@@ -249,7 +247,7 @@ class App extends Component {
             .minutes(0)
             .toDate()}
           formats={calDateTimeFormatting}
-          onEventDrop={this.moveEventHandler}
+          onEventDrop={this.onMoveEvent}
           eventPropGetter={this.setEventCellStyling}
           onSelectEvent={this.onCalendarEventSelection}
           onSelectSlot={this.calendarSelectionHandler}
@@ -260,17 +258,17 @@ class App extends Component {
           colorIndex={this.state.colorIndex}
           end={this.state.newEventEnd}
           modalOpen={this.state.quickCreateModal}
-          onClose={this.closeModalHandler.bind(this)}
+          onClose={this.closeModalHandler}
           googleColors={googleColors}
           sendEventToCalendar={this.updateCalendarFromQuickCreate}
-          showUpdatedEvent={this.renderUpdatedEvent.bind(this)}
+          showUpdatedEvent={this.renderUpdatedEvent}
           delete={this.quickRemoveFromCalendar}
         />
         <Modal
-          modalOpen={this.state.showModal}
+          modalOpen={this.state.showWelcomeModal}
           toggle={this.closeModal}
           title="Using the Workweek Planner"
-          size="lg"
+          size="md"
         >
           <Guide />
         </Modal>
