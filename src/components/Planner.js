@@ -267,7 +267,7 @@ class App extends Component {
         <Modal
           modalOpen={this.state.showWelcomeModal}
           toggle={this.closeModal}
-          title="Using the Workweek Planner"
+          title="Using Schedule My Workweek"
           size="md"
         >
           <Guide />
