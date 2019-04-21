@@ -24,14 +24,17 @@ steps:
     npm run build
   displayName: 'npm install and build'
 
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Agent.BuildDirectory)'
+    TargetFolder: 'docs'
+    CleanTargetFolder: true
+
 - script: |
-    rm -rf docs
-    mkdir docs
-    cp -r build/* docs
     git config --local user.email "mfregoso@users.noreply.github.com" 
     git config --local user.name "mfregoso"
     git diff --quiet && git diff --staged --quiet || git commit -am "update build ***NO_CI***"
-  displayName: 'move build to docs and commit'
+  displayName: 'commit changes'
 
 - script: |
     mkdir ~/.ssh && mv $DOWNLOADSECUREFILE_SECUREFILEPATH ~/.ssh/id_rsa
