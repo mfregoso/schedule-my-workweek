@@ -27,12 +27,14 @@ steps:
 - task: CopyFiles@2
   inputs:
     SourceFolder: 'build'
-    TargetFolder: 'docs'
+    TargetFolder: '$(Build.SourcesDirectory)/docs'
     CleanTargetFolder: true
 
 - script: |
     git config --local user.email "mfregoso@users.noreply.github.com" 
     git config --local user.name "mfregoso"
+    ls docs
+    git status
     git diff --quiet && git diff --staged --quiet || git commit -am "update build ***NO_CI***"
   displayName: 'commit changes'
 
