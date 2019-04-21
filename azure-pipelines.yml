@@ -10,16 +10,29 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 steps:
-- checkout: self
-  persistCredentials: true
 - task: NodeTool@0
   inputs:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: 'deploy_key'
+
 - script: |
-    git config user.email "mfregoso@users.noreply.github.com" 
-    git config user.name "mfregoso"
     npm install
-    npm run deploy -- -r https://$(ghkey)@github.com/mfregoso/schedule-my-workweek.git
-  displayName: 'npm install, build and deploy'
+    npm run build
+    rm -rf docs
+    mv build docs
+    git config --local user.email "mfregoso@users.noreply.github.com" 
+    git config --local user.name "mfregoso"
+    git diff --quiet && git diff --staged --quiet || git commit -am "update build ***NO_CI***"
+  displayName: 'npm install, build and commit changes to docs'
+
+- script: |
+    mkdir ~/.ssh && mv $DOWNLOADSECUREFILE_SECUREFILEPATH ~/.ssh/id_rsa
+    chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_rsa
+    ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+    git remote set-url --push origin git@github.com:mfregoso/schedule-my-workweek.git
+    git push origin HEAD:master
+  displayName: 'push/deploy new build'
