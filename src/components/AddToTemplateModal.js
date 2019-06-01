@@ -151,40 +151,45 @@ class AddToTemplateModal extends Component {
     this.setState({ modalHeaderColor });
   };
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (
       this.props.start !== prevProps.start ||
       this.props.end !== prevProps.end
     ) {
-      this.setState({
-        startDate: moment(this.props.start),
-        startTime: moment(this.props.start),
-        endTime: moment(this.props.end),
-        dayOfWeek: moment(this.props.start).format("e")
-      });
-    }
-    if (this.state.selectedDays !== prevState.selectedDays) {
-      //this.validateInputs();
+      this.setNewEventTime();
     }
     if (this.props.selectedEvent !== prevProps.selectedEvent) {
-      let {
+      this.checkSelectedEvent();
+    }
+  }
+
+  setNewEventTime = () => {
+    this.setState({
+      startDate: moment(this.props.start),
+      startTime: moment(this.props.start),
+      endTime: moment(this.props.end),
+      dayOfWeek: moment(this.props.start).format("e")
+    });
+  }
+
+  checkSelectedEvent = () => {
+    const {
+      colorTypeId,
+      dayOfWeek,
+      start,
+      end,
+      title
+    } = this.props.selectedEvent;
+    if (colorTypeId) {
+      this.updateModalBgColor(colorTypeId);
+      this.setState({
+        inEditMode: true,
+        title,
         colorTypeId,
         dayOfWeek,
-        start,
-        end,
-        title
-      } = this.props.selectedEvent;
-      if (colorTypeId) {
-        this.updateModalBgColor(colorTypeId);
-        this.setState({
-          inEditMode: true,
-          title,
-          colorTypeId,
-          dayOfWeek,
-          startTime: moment(start),
-          endTime: moment(end)
-        });
-      }
+        startTime: moment(start),
+        endTime: moment(end)
+      });
     }
   }
 

@@ -37,46 +37,26 @@ class App extends Component {
     showWelcomeModal: false
   };
 
-  updateCalendarFromQuickCreate = newEvents => {
-    let newEventsArr = newEvents.map(ev => this.reformatEventData(ev));
-    this.setState({
-      events: [...this.state.events, ...newEventsArr],
-      quickCreateModal: false
-    });
-  };
-
-  reformatEventData = event => {
-    let startDate = moment("11012015", "MMDDYYYY")
-      .add(event.dayOfWeek, "days")
-      .format("YYYY-MM-DD");
-    if (this.state.colorIndex[event.colorTypeId]) {
-      const colorData = this.state.colorIndex[event.colorTypeId];
-      let bgColor = colorData.color;
-      const updatedEvent = {
-        ...event,
-        start: new Date(`${startDate} ${event.startTime}`),
-        end: new Date(`${startDate} ${event.endTime}`),
-        bgColor
-      };
-      return updatedEvent;
-    } else {
-      // just in edge case
-      const updatedEvent = {
-        ...event,
-        start: new Date(`${startDate} ${event.startTime}`),
-        end: new Date(`${startDate} ${event.endTime}`),
-        bgColor: "#4286f4"
-      };
-      return updatedEvent;
-    }
-  };
-
   componentDidMount() {
-    let returningUser = localStorage.getItem("returningUser");
+    this.checkIfNewVisitor();
+    this.loadSavedEvents();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.events !== prevState.events) {
+      this.saveEventsToLocal();
+    }
+  }
+
+  checkIfNewVisitor = () => {
+    const returningUser = localStorage.getItem("returningUser");
     if (!returningUser) {
       localStorage.setItem("returningUser", true);
       this.setState({ showWelcomeModal: true });
     }
+  }
+
+  loadSavedEvents = () => {
     let savedData = localStorage.getItem("schedule");
     if (savedData) {
       const parsed = JSON.parse(savedData);
@@ -85,12 +65,40 @@ class App extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.events !== prevState.events) {
-      const events = JSON.stringify(this.state.events);
-      localStorage.setItem("schedule", events);
-    }
+  updateCalendarFromQuickCreate = newEvents => {
+    let newEventsArr = newEvents.map(ev => this.reformatEventData(ev));
+    this.setState({
+      events: [...this.state.events, ...newEventsArr],
+      quickCreateModal: false
+    });
+  };
+
+  reduceEventData = events => {
+    return events.map(({startTime, endTime, colorTypeId, dayOfWeek, title}) => {
+      return {startTime, endTime, colorTypeId, dayOfWeek, title};
+    });
   }
+
+  saveEventsToLocal = () => {
+      const events = this.reduceEventData(this.state.events);
+      const stringified = JSON.stringify(events);
+      localStorage.setItem("schedule", stringified);
+  };
+
+  reformatEventData = event => {
+    let startDate = moment("11012015", "MMDDYYYY")
+      .add(event.dayOfWeek, "days")
+      .format("YYYY-MM-DD");
+    const colorData = this.state.colorIndex[event.colorTypeId];
+    let bgColor = colorData ? colorData.color : "#4286f4";
+    const updatedEvent = {
+      ...event,
+      start: new Date(`${startDate} ${event.startTime}`),
+      end: new Date(`${startDate} ${event.endTime}`),
+      bgColor
+    };
+    return updatedEvent;
+  };
 
   closeModalHandler = () => {
     this.setState({
