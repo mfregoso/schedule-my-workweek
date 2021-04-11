@@ -18,7 +18,6 @@ import MultiDayPicker from "./MultiDayPicker";
 import ColorPicker from "./ColorPicker";
 import daysOfWeek from "../data/daysOfWeek";
 import "../styles/react-datepicker.css";
-import "../styles/zmdi-buttons.css";
 
 class AddToTemplateModal extends Component {
   state = {

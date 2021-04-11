@@ -1,24 +1,25 @@
 import React, { Component } from "react";
-import BigCalendar from "react-big-calendar";
+import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import QuickCreateModal from "./AddToTemplateModal";
 import Modal from "./GenericModal";
 import Guide from "./WelcomeGuide";
 import googleColors from "../data/googleColors";
-import "../styles/custom-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "../styles/app-styles.css";
 
-const DragAndDropCalendar = withDragAndDrop(BigCalendar);
-const localizer = BigCalendar.momentLocalizer(moment);
+const DragAndDropCalendar = withDragAndDrop(Calendar);
+const localizer = momentLocalizer(moment);
 
-const colorIndex = colorTypes => {
+const colorIndex = (colorTypes) => {
   // transform array of colors into one object (to be used as an index for O(1) lookup)
   const colorIndex = {};
-  const colorKeys = Object.keys(colorTypes[0]).filter(key => key !== "id");
+  const colorKeys = Object.keys(colorTypes[0]).filter((key) => key !== "id");
   for (const color of colorTypes) {
     const colorData = {};
-    colorKeys.forEach(key => {
+    colorKeys.forEach((key) => {
       colorData[key] = color[key];
     });
     colorIndex[color.id] = colorData;
@@ -34,7 +35,7 @@ class App extends Component {
     selectedEvent: {},
     newStartTime: null,
     newEndTime: null,
-    showWelcomeModal: false
+    showWelcomeModal: false,
   };
 
   componentDidMount() {
@@ -54,38 +55,40 @@ class App extends Component {
       localStorage.setItem("returningUser", true);
       this.setState({ showWelcomeModal: true });
     }
-  }
+  };
 
   loadSavedEvents = () => {
     let savedData = localStorage.getItem("schedule");
     if (savedData) {
       const parsed = JSON.parse(savedData);
-      const events = parsed.map(ev => this.reformatEventData(ev));
+      const events = parsed.map((ev) => this.reformatEventData(ev));
       this.setState({ events });
     }
-  }
+  };
 
-  updateCalendarFromQuickCreate = newEvents => {
-    let newEventsArr = newEvents.map(ev => this.reformatEventData(ev));
+  updateCalendarFromQuickCreate = (newEvents) => {
+    let newEventsArr = newEvents.map((ev) => this.reformatEventData(ev));
     this.setState({
       events: [...this.state.events, ...newEventsArr],
-      quickCreateModal: false
+      quickCreateModal: false,
     });
   };
 
-  reduceEventData = events => {
-    return events.map(({startTime, endTime, colorTypeId, dayOfWeek, title}) => {
-      return {startTime, endTime, colorTypeId, dayOfWeek, title};
-    });
-  }
+  reduceEventData = (events) => {
+    return events.map(
+      ({ startTime, endTime, colorTypeId, dayOfWeek, title }) => {
+        return { startTime, endTime, colorTypeId, dayOfWeek, title };
+      }
+    );
+  };
 
   saveEventsToLocal = () => {
-      const events = this.reduceEventData(this.state.events);
-      const stringified = JSON.stringify(events);
-      localStorage.setItem("schedule", stringified);
+    const events = this.reduceEventData(this.state.events);
+    const stringified = JSON.stringify(events);
+    localStorage.setItem("schedule", stringified);
   };
 
-  reformatEventData = event => {
+  reformatEventData = (event) => {
     let startDate = moment("11012015", "MMDDYYYY")
       .add(event.dayOfWeek, "days")
       .format("YYYY-MM-DD");
@@ -95,7 +98,7 @@ class App extends Component {
       ...event,
       start: new Date(`${startDate} ${event.startTime}`),
       end: new Date(`${startDate} ${event.endTime}`),
-      bgColor
+      bgColor,
     };
     return updatedEvent;
   };
@@ -103,16 +106,17 @@ class App extends Component {
   closeModalHandler = () => {
     this.setState({
       quickCreateModal: false,
-      selectedEvent: {}
+      selectedEvent: {},
     });
   };
 
-  quickRemoveFromCalendar = event => {
-    let events = this.state.events.filter(ev => ev !== event);
+  quickRemoveFromCalendar = (event) => {
+    let events = this.state.events.filter((ev) => ev !== event);
     this.setState({ events });
   };
 
-  onMoveEvent = ({ event, start, end }) => {
+  onEventMoveResize = ({ event, start, end }) => {
+    console.log("move");
     let startDate = moment(start).format("DD");
     let endDate = moment(end).format("DD");
     let endDateTime = end;
@@ -123,7 +127,7 @@ class App extends Component {
         .toDate();
     }
     this.prepareMovedEventForUpdate(event, start, endDateTime);
-  }
+  };
 
   prepareMovedEventForUpdate = (event, newStart, newEnd) => {
     let dayOfWeek = moment(newStart).format("e");
@@ -133,7 +137,7 @@ class App extends Component {
       ...event,
       dayOfWeek,
       startTime,
-      endTime
+      endTime,
     };
     this.renderMovedEvent(event, updatedEvent, newStart, newEnd);
   };
@@ -141,49 +145,49 @@ class App extends Component {
   renderUpdatedEvent = (original, event) => {
     const { events } = this.state;
     let reformatted = this.reformatEventData(event);
-    let remaining = events.filter(ev => ev !== original);
+    let remaining = events.filter((ev) => ev !== original);
     this.setState({
       events: [...remaining, reformatted],
       quickCreateModal: false,
-      selectedEvent: {}
+      selectedEvent: {},
     });
-  }
+  };
 
   renderMovedEvent = (original, event, start, end) => {
     const { events } = this.state;
     const updatedEvent = { ...event, start, end };
-    const remaining = events.filter(ev => ev !== original);
+    const remaining = events.filter((ev) => ev !== original);
     this.setState({
-      events: [...remaining, updatedEvent]
+      events: [...remaining, updatedEvent],
     });
-  }
+  };
 
-  setEventCellStyling = event => {
+  setEventCellStyling = (event) => {
     let color = event.bgColor;
     let style = {
       background: `rgba(${parseInt(color.substring(1, 3), 16)}, ${parseInt(
         color.substring(3, 5),
         16
-      )}, ${parseInt(color.substring(5, 7), 16)}, 0.99)`
+      )}, ${parseInt(color.substring(5, 7), 16)}, 0.99)`,
     };
     return { style };
   };
 
-  onCalendarEventSelection = event => {
+  onCalendarEventSelection = (event) => {
     this.setState({
       selectedEvent: event,
-      quickCreateModal: true
+      quickCreateModal: true,
     });
   };
 
-  calendarSelectionHandler = slotInfo => {
+  calendarSelectionHandler = (slotInfo) => {
     let newEventStart = parseInt(moment(slotInfo.start).format("x"));
     let newEventEnd = parseInt(moment(slotInfo.end).format("x"));
 
     this.setState({
       newEventStart,
       newEventEnd,
-      quickCreateModal: true
+      quickCreateModal: true,
     });
   };
 
@@ -194,7 +198,7 @@ class App extends Component {
       dayFormat: (date, culture, localizer) =>
         localizer.format(date, "dddd", culture),
       timeGutterFormat: (date, culture, localizer) =>
-        localizer.format(date, "h a", culture)
+        localizer.format(date, "h a", culture),
     };
     return (
       <div className="container-fluid">
@@ -210,7 +214,7 @@ class App extends Component {
                 lineHeight: "1.1em",
                 width: "2.45em",
                 borderRadius: "2.45em",
-                margin: "0 0em 0.8em 0.5em"
+                margin: "0 0em 0.8em 0.5em",
               }}
             >
               <big>?</big>
@@ -232,7 +236,7 @@ class App extends Component {
                 position: "relative",
                 top: "0.5em",
                 borderRadius: "1.8em",
-                margin: "0 1em 0.8em 0"
+                margin: "0 1em 0.8em 0",
               }}
             >
               <i className="zmdi zmdi-plus text-white zmdi-hc-lg" />
@@ -240,7 +244,6 @@ class App extends Component {
           </div>
         </div>
         <DragAndDropCalendar
-          {...this.props}
           localizer={localizer}
           selectable="ignoreEvents"
           events={this.state.events}
@@ -255,7 +258,8 @@ class App extends Component {
             .minutes(0)
             .toDate()}
           formats={calDateTimeFormatting}
-          onEventDrop={this.onMoveEvent}
+          onEventDrop={this.onEventMoveResize}
+          onEventResize={this.onEventMoveResize}
           eventPropGetter={this.setEventCellStyling}
           onSelectEvent={this.onCalendarEventSelection}
           onSelectSlot={this.calendarSelectionHandler}
